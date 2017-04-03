@@ -19,6 +19,10 @@ import java.util.UUID;
 /**
  * Class to send json messages to players
  * which can execute an action when clicked
+ *
+ * @author Mas281
+ * @version 1.0
+ * @since 3/04/2017
  */
 public class ClickActions implements Listener {
 
