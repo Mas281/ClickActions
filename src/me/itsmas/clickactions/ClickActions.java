@@ -181,6 +181,8 @@ public class ClickActions implements Listener {
         {
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + id.toString()));
         }
+
+        player.spigot().sendMessage(components);
     }
 
     /* Listeners */
@@ -219,6 +221,13 @@ public class ClickActions implements Listener {
 
         // The data associated with the UUID they entered
         ActionData data = actionMap.get(id);
+
+        if (data == null)
+        {
+            return;
+        }
+
+        event.setCancelled(true);
 
         Player player = event.getPlayer();
 
