@@ -100,14 +100,20 @@ public class ClickActions implements Listener {
         private PlayerAction action;
 
         /**
+         * Whether the action should expire
+         */
+        private boolean expire;
+
+        /**
          * ActionData constructor
          * @param playerId The {@link UUID} of the player to execute the action on
          * @param action The {@link PlayerAction} to execute
          */
-        private ActionData(UUID playerId, PlayerAction action)
+        private ActionData(UUID playerId, PlayerAction action, boolean expire)
         {
             this.playerId = playerId;
             this.action = action;
+            this.expire = expire;
         }
 
         /**
@@ -127,6 +133,15 @@ public class ClickActions implements Listener {
         {
             return action;
         }
+
+        /**
+         * Whether the action should expire after being used once
+         * @return Whether the action should expire
+         */
+        private boolean shouldExpire()
+        {
+            return expire;
+        }
     }
 
     /**
@@ -140,9 +155,9 @@ public class ClickActions implements Listener {
      * @param msg The message to send to the player
      * @param action The action to execute when the player clicks the message
      */
-    public void sendActionMessage(Player player, String msg, PlayerAction action)
+    public void sendActionMessage(Player player, String msg, PlayerAction action, boolean expire)
     {
-        sendActionMessage(player, new TextComponent(msg), action);
+        sendActionMessage(player, new TextComponent(msg), action, expire);
     }
 
     /**
@@ -151,9 +166,9 @@ public class ClickActions implements Listener {
      * @param component The text component to send to the player
      * @param action The action to execute when the player clicks the message
      */
-    public void sendActionMessage(Player player, TextComponent component, PlayerAction action)
+    public void sendActionMessage(Player player, TextComponent component, PlayerAction action, boolean expire)
     {
-        sendActionMessage(player, new TextComponent[] {component}, action);
+        sendActionMessage(player, new TextComponent[] {component}, action, expire);
     }
 
     /**
@@ -162,7 +177,7 @@ public class ClickActions implements Listener {
      * @param components The text components to send to the player
      * @param action The action to execute when the player clicks the message
      */
-    public void sendActionMessage(Player player, TextComponent[] components, PlayerAction action)
+    public void sendActionMessage(Player player, TextComponent[] components, PlayerAction action, boolean expire)
     {
         Validate.notNull(player, "Player cannot be null");
         Validate.notNull(components, "Components cannot be null");
@@ -175,7 +190,7 @@ public class ClickActions implements Listener {
             id = UUID.randomUUID();
         }
 
-        actionMap.put(id, new ActionData(player.getUniqueId(), action));
+        actionMap.put(id, new ActionData(player.getUniqueId(), action, expire));
 
         for (BaseComponent component : components)
         {
@@ -185,20 +200,26 @@ public class ClickActions implements Listener {
         player.spigot().sendMessage(components);
     }
 
+    /**
+     * Remove all the action messages associated with a player
+     * @param player The player who's actions should be removed
+     */
+    public void removeActionMessages(Player player)
+    {
+        for (Map.Entry<UUID, ActionData> entry : actionMap.entrySet())
+        {
+            if (entry.getValue().getPlayerId().equals(player.getUniqueId()))
+            {
+                actionMap.remove(entry.getKey());
+            }
+        }
+    }
+
     /* Listeners */
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        // Remove all click actions for
-        // a player when they log out
-        for (Map.Entry<UUID, ActionData> entry : actionMap.entrySet())
-        {
-            if (entry.getValue().getPlayerId().equals(event.getPlayer().getUniqueId()))
-            {
-                actionMap.remove(entry.getKey());
-                return;
-            }
-        }
+        removeActionMessages(event.getPlayer());
     }
 
     @EventHandler
@@ -231,10 +252,16 @@ public class ClickActions implements Listener {
 
         Player player = event.getPlayer();
 
-        if (player.getUniqueId().equals(data.getPlayerId()))
+        if (player.getUniqueId().equals(id))
         {
             // They entered a command linked with their data
             data.getAction().run(player);
+
+            // This action should expire after being used once
+            if (data.shouldExpire())
+            {
+                actionMap.remove(id);
+            }
         }
     }
 }

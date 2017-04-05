@@ -1,21 +1,23 @@
 package me.itsmas.clickactions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class ExampleClass {
+public class ExampleClass extends JavaPlugin {
 
     public void onEnable()
     {
         // Init with your own plugin instance in your onEnable
-        ClickActions.init(null);
+        ClickActions.init(this);
     }
 
     public void example()
     {
-        Player player = null; // Obviously pass a non-null valid player value
+        Player player = Bukkit.getPlayer("Notch");
 
         // Example: Traps the player in a bedrock structure when they click the message
         ClickActions.getInstance().sendActionMessage(player, "Click here for magical things to happen!", aPlayer ->
