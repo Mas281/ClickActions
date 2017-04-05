@@ -20,7 +20,8 @@ public class ExampleClass extends JavaPlugin {
         Player player = Bukkit.getPlayer("Notch");
 
         // Example: Traps the player in a bedrock structure when they click the message
-        ClickActions.getInstance().sendActionMessage(player, "Click here for magical things to happen!", aPlayer ->
+        // Will expire after being used once
+        ClickActions.getInstance().sendActionMessage(player, "Click here for magical things to happen!", true, aPlayer ->
         {
             Location location = aPlayer.getLocation();
 
@@ -33,5 +34,8 @@ public class ExampleClass extends JavaPlugin {
 
             location.clone().add(0, 2, 0).getBlock().setType(Material.BEDROCK);
         });
+
+        // Removes all the player's click actions
+        ClickActions.getInstance().removeActionMessages(player);
     }
 }

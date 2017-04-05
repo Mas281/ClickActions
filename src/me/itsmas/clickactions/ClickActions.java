@@ -153,31 +153,34 @@ public class ClickActions implements Listener {
      * Sends a clickable action message to a player
      * @param player The player to send the message to
      * @param msg The message to send to the player
+     * @param expire Whether the action should expire after being used once
      * @param action The action to execute when the player clicks the message
      */
-    public void sendActionMessage(Player player, String msg, PlayerAction action, boolean expire)
+    public void sendActionMessage(Player player, String msg, boolean expire, PlayerAction action)
     {
-        sendActionMessage(player, new TextComponent(msg), action, expire);
+        sendActionMessage(player, new TextComponent(msg), expire, action);
     }
 
     /**
      * Sends a clickable action message to a player
      * @param player The player to send the message to
      * @param component The text component to send to the player
+     * @param expire Whether the action should expire after being used once
      * @param action The action to execute when the player clicks the message
      */
-    public void sendActionMessage(Player player, TextComponent component, PlayerAction action, boolean expire)
+    public void sendActionMessage(Player player, TextComponent component, boolean expire, PlayerAction action)
     {
-        sendActionMessage(player, new TextComponent[] {component}, action, expire);
+        sendActionMessage(player, new TextComponent[] {component}, expire, action);
     }
 
     /**
      * Sends clickable action messages to a player
      * @param player The player to send the message to
      * @param components The text components to send to the player
+     * @param expire Whether the action should expire after being used once
      * @param action The action to execute when the player clicks the message
      */
-    public void sendActionMessage(Player player, TextComponent[] components, PlayerAction action, boolean expire)
+    public void sendActionMessage(Player player, TextComponent[] components, boolean expire, PlayerAction action)
     {
         Validate.notNull(player, "Player cannot be null");
         Validate.notNull(components, "Components cannot be null");
